@@ -1,0 +1,3 @@
+/home/mattn/Projects/CraftingInterpreters/clox/cmake-build-debug/CMakeFiles/clox.dir
+/home/mattn/Projects/CraftingInterpreters/clox/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/mattn/Projects/CraftingInterpreters/clox/cmake-build-debug/CMakeFiles/rebuild_cache.dir
