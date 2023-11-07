@@ -41,14 +41,72 @@ class Scanner {
         this.source = source;
     }
 
-    List<Token> scanTokens() {
-        while (!isAtEnd()) {
-            start = current;
-            scanToken();
+    private void addToken(TokenType type) {
+        addToken(type, null);
+    }
+
+    private void addToken(TokenType type, Object literal) {
+        String text = source.substring(start, current);
+        tokens.add(new Token(type, text, literal, line));
+    }
+
+    private char advance() {
+        return source.charAt(current++);
+    }
+
+    private void identifier() {
+        while (isAlphaNumeric(peek())) advance();
+
+        String text = source.substring(start, current);
+        TokenType type = keywords.get(text);
+        if (type == null) type = IDENTIFIER;
+        addToken(type);
+    }
+
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+    }
+
+    private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || isDigit(c);
+    }
+
+    private boolean isAtEnd() {
+        return current >= source.length();
+    }
+
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private boolean match(char expected) {
+        if (isAtEnd()) return false;
+        if (source.charAt(current) != expected) return false;
+
+        current++;
+        return true;
+    }
+
+    private void number() {
+        while (isDigit(peek())) advance();
+
+        if (peek() == '.' && isDigit(peekNext())) {
+            advance();
+
+            while (isDigit(peek())) advance();
         }
 
-        tokens.add(new Token(EOF, "", null, line));
-        return tokens;
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+    }
+
+    private char peek() {
+        if (isAtEnd()) return '\0';
+        return source.charAt(current);
+    }
+
+    private char peekNext() {
+        if (current + 1 > source.length()) return '\0';
+        return source.charAt(current + 1);
     }
 
     private void scanToken() {
@@ -125,35 +183,6 @@ class Scanner {
         }
     }
 
-    private boolean isAlphaNumeric(char c) {
-        return isAlpha(c) || isDigit(c);
-    }
-
-    private boolean isAlpha(char c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-    }
-
-    private void identifier() {
-        while (isAlphaNumeric(peek())) advance();
-
-        String text = source.substring(start, current);
-        TokenType type = keywords.get(text);
-        if (type == null) type = IDENTIFIER;
-        addToken(type);
-    }
-
-    private void number() {
-        while (isDigit(peek())) advance();
-
-        if (peek() == '.' && isDigit(peekNext())) {
-            advance();
-
-            while (isDigit(peek())) advance();
-        }
-
-        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
-    }
-
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
             if (peek() == '\n') line++;
@@ -171,43 +200,14 @@ class Scanner {
         addToken(STRING, value);
     }
 
-    private boolean match(char expected) {
-        if (isAtEnd()) return false;
-        if (source.charAt(current) != expected) return false;
+    List<Token> scanTokens() {
+        while (!isAtEnd()) {
+            start = current;
+            scanToken();
+        }
 
-        current++;
-        return true;
-    }
-
-    private char peek() {
-        if (isAtEnd()) return '\0';
-        return source.charAt(current);
-    }
-
-    private char peekNext() {
-        if (current + 1 > source.length()) return '\0';
-        return source.charAt(current + 1);
-    }
-
-    private boolean isDigit(char c) {
-        return c >= '0' && c <= '9';
-    }
-
-    private boolean isAtEnd() {
-        return current >= source.length();
-    }
-
-    private char advance() {
-        return source.charAt(current++);
-    }
-
-    private void addToken(TokenType type) {
-        addToken(type, null);
-    }
-
-    private void addToken(TokenType type, Object literal) {
-        String text = source.substring(start, current);
-        tokens.add(new Token(type, text, literal, line));
+        tokens.add(new Token(EOF, "", null, line));
+        return tokens;
     }
 
 }
