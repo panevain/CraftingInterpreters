@@ -28,7 +28,6 @@ public class Interpreter implements Expr.Visitor<Object> {
                 return !isTruthy(right);
         }
 
-
         // Unreachable
         return null;
     }
