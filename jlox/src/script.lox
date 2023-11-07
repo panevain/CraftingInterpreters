@@ -1,26 +1,23 @@
-print (5 * 4 + 3 - 2 / -1 == 25) != (20 > 25);
-print "one";
-print true;
-print nil;
-print 2+1;
+var a = 0;
+var temp;
 
-// Test block scoping
-var a = "global a";
-var b = "global b";
-var c = "global c";
-{
-  var a = "outer a";
-  var b = "outer b";
-  {
-    var a = "inner a";
+for(var b = 1; a < 10000; b = temp + b){
     print a;
-    print b;
-    print c;
-  }
-  print a;
-  print b;
-  print c;
+    temp = a;
+    a = b;
 }
-print a;
-print b;
-print c;
+
+var truthy = false;
+
+if(truthy) print "Is Truthy"; else print "Not Truthy";
+
+var done = false;
+var counter = 0;
+
+while(!done){
+    print counter;
+    if(counter >= 10){
+        done = true;
+    }
+    counter = counter + 1;
+}
