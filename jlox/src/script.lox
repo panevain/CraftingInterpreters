@@ -20,3 +20,14 @@ fun makeCounter() {
 var counter = makeCounter();
 counter();
 counter();
+
+var a = "global";
+{
+    fun show(){
+        print a;
+    }
+    show();
+    // Prepend with var for fun
+    a = "inner";
+    show();
+}
