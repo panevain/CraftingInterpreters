@@ -1,4 +1,5 @@
 #include "common.h"
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
 #include <stdio.h>
@@ -38,10 +39,10 @@ static InterpretResult run() {
 
 #ifdef DEBUG_TRACE_EXECUTION
         printf("        ");
-        for(Value* slot = vm.stack; slot < vm.stackTop; slot++) {
-        printf("[ ");
-        printValue(*slot);
-        printf(" ]");
+        for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
+            printf("[ ");
+            printValue(*slot);
+            printf(" ]");
         }
         printf("\n");
         disassembleInstruction(vm.chunk, (int) (vm.ip - vm.chunk->code));
@@ -60,7 +61,7 @@ static InterpretResult run() {
                 push(-pop());
                 break;
             }
-            case OP_ADD:{
+            case OP_ADD: {
                 BINARY_OP(+);
                 break;
             }
@@ -72,7 +73,7 @@ static InterpretResult run() {
                 BINARY_OP(*);
                 break;
             }
-            case OP_DIVIDE:{
+            case OP_DIVIDE: {
                 BINARY_OP(/);
                 break;
             }
@@ -89,9 +90,8 @@ static InterpretResult run() {
 #undef BINARY_OP()
 }
 
-InterpretResult interpret(Chunk *chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+InterpretResult interpret(const char *source) {
+    compile(source);
+    return INTERPRET_OK;
 }
 
