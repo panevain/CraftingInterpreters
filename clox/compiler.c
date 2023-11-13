@@ -179,12 +179,23 @@ static void binary() {
             emitByte(OP_DIVIDE);
             break;
         case TOKEN_BANG_EQUAL:
-            emitBytes(OP_EQUAL, OP_NOT); break;
-        case TOKEN_EQUAL_EQUAL:   emitByte(OP_EQUAL); break;
-        case TOKEN_GREATER:       emitByte(OP_GREATER); break;
-        case TOKEN_GREATER_EQUAL: emitBytes(OP_LESS, OP_NOT); break;
-        case TOKEN_LESS:          emitByte(OP_LESS); break;
-        case TOKEN_LESS_EQUAL:    emitBytes(OP_GREATER, OP_NOT); break;
+            emitBytes(OP_EQUAL, OP_NOT);
+            break;
+        case TOKEN_EQUAL_EQUAL:
+            emitByte(OP_EQUAL);
+            break;
+        case TOKEN_GREATER:
+            emitByte(OP_GREATER);
+            break;
+        case TOKEN_GREATER_EQUAL:
+            emitBytes(OP_LESS, OP_NOT);
+            break;
+        case TOKEN_LESS:
+            emitByte(OP_LESS);
+            break;
+        case TOKEN_LESS_EQUAL:
+            emitBytes(OP_GREATER, OP_NOT);
+            break;
         default:
             return;
     }
@@ -206,7 +217,6 @@ static void literal() {
     }
 }
 
-
 static void expression() {
     parsePrecedence(PREC_ASSIGNMENT);
 }
@@ -214,6 +224,10 @@ static void expression() {
 static void number() {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(NUMBER_VAL(value));
+}
+
+static void string() {
+    emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
 static void unary() {
@@ -229,7 +243,6 @@ static void unary() {
             emitByte(OP_NEGATE);
             break;
         default:
-
             return;
     }
 }
@@ -256,13 +269,13 @@ ParseRule rules[] = {
         [TOKEN_BANG]          = {unary, NULL, PREC_NONE},
         [TOKEN_BANG_EQUAL]    = {NULL, binary, PREC_EQUALITY},
         [TOKEN_EQUAL]         = {NULL, NULL, PREC_NONE},
-        [TOKEN_EQUAL_EQUAL]   = {NULL,     binary, PREC_EQUALITY},
-        [TOKEN_GREATER]       = {NULL,     binary, PREC_COMPARISON},
-        [TOKEN_GREATER_EQUAL] = {NULL,     binary, PREC_COMPARISON},
-        [TOKEN_LESS]          = {NULL,     binary, PREC_COMPARISON},
-        [TOKEN_LESS_EQUAL]    = {NULL,     binary, PREC_COMPARISON},
+        [TOKEN_EQUAL_EQUAL]   = {NULL, binary, PREC_EQUALITY},
+        [TOKEN_GREATER]       = {NULL, binary, PREC_COMPARISON},
+        [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
+        [TOKEN_LESS]          = {NULL, binary, PREC_COMPARISON},
+        [TOKEN_LESS_EQUAL]    = {NULL, binary, PREC_COMPARISON},
         [TOKEN_IDENTIFIER]    = {NULL, NULL, PREC_NONE},
-        [TOKEN_STRING]        = {NULL, NULL, PREC_NONE},
+        [TOKEN_STRING]        = {string, NULL, PREC_NONE},
         [TOKEN_NUMBER]        = {number, NULL, PREC_NONE},
         [TOKEN_AND]           = {NULL, NULL, PREC_NONE},
         [TOKEN_CLASS]         = {NULL, NULL, PREC_NONE},
