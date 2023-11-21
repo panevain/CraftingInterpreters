@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define UINT8_COUNT (UINT8_MAX + 1)
 
 #ifndef NDEBUG
 #define DEBUG_PRINT_CODE
