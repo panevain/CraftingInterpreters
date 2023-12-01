@@ -147,9 +147,9 @@ static bool callValue(Value callee, int argCount) {
     return false;
 }
 
-static bool invokeFromClass(ObjClass* klass, ObjString* name, int argCount){
+static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     Value method;
-    if(!tableGet(&klass->methods, name, &method)){
+    if (!tableGet(&klass->methods, name, &method)) {
         runtimeError("Undefined property '%s'.", name->chars);
         return false;
     }
@@ -167,7 +167,7 @@ static bool invoke(ObjString *name, int argCount) {
     ObjInstance *instance = AS_INSTANCE(receiver);
 
     Value value;
-    if(tableGet(&instance->fields, name, &value)){
+    if (tableGet(&instance->fields, name, &value)) {
         vm.stackTop[-argCount - 1] = value;
         return callValue(value, argCount);
     }
@@ -493,6 +493,37 @@ static InterpretResult run() {
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 frame = &vm.frames[vm.frameCount - 1];
+                break;
+            }
+            case OP_SUPER_INVOKE: {
+                ObjString *method = READ_STRING();
+                int argCount = READ_BYTE();
+                ObjClass *superclass = AS_CLASS(pop());
+                if (!invokeFromClass(superclass, method, argCount)) {
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                frame = &vm.frames[vm.frameCount - 1];
+                break;
+            }
+            case OP_INHERIT: {
+                Value superclass = peek(1);
+                if (!IS_CLASS(superclass)) {
+                    runtimeError("Superclass must be a class.");
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                ObjClass *subclass = AS_CLASS(peek(0));
+                tableAddAll(&AS_CLASS(superclass)->methods,
+                            &subclass->methods);
+                pop(); // Subclass.
+                break;
+            }
+            case OP_GET_SUPER: {
+                ObjString *name = READ_STRING();
+                ObjClass *superclass = AS_CLASS(pop());
+
+                if (!bindMethod(superclass, name)) {
+                    return INTERPRET_RUNTIME_ERROR;
+                }
                 break;
             }
         }

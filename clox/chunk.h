@@ -28,6 +28,7 @@ typedef enum {
     OP_SET_LOCAL,
     OP_GET_PROPERTY,
     OP_SET_PROPERTY,
+    OP_GET_SUPER,
     OP_GET_UPVALUE,
     OP_SET_UPVALUE,
     OP_CLOSE_UPVALUE,
@@ -36,6 +37,8 @@ typedef enum {
     OP_LOOP,
     OP_CALL,
     OP_INVOKE,
+    OP_SUPER_INVOKE,
+    OP_INHERIT,
     OP_CLOSURE,
     OP_CLASS,
     OP_METHOD
